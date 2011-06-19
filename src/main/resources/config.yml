@@ -1,0 +1,7 @@
+config:
+    useMultiworlds: false
+    worlds: 
+        creative:
+            environment: NORMAL
+        minigames:
+            environment: NORMAL

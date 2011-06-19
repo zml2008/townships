@@ -1,0 +1,12 @@
+name: "MechyStuff"
+main: com.zml.mech.MechPlugin
+version: "${project.version}"
+database: true
+commands:
+  mech:
+    description: "Single command to reload the sign file"
+    usage: "/<command> reload"
+  map:
+    description: "Map management Commands"
+    usage: "/<command> use <id> (ID is shown it the corner of a map, map_#)"
+  

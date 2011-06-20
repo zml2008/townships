@@ -15,24 +15,26 @@ import org.bukkit.material.MaterialData;
 
 public class GeneralCmds {
 
-    @Command(aliases = { "townships" }, desc = "Townships plugin commands", flags = "", min = 1, max = 1)
-    @NestedCommand({ AdminCmds.class })
+    @Command(aliases = {"townships"}, desc = "Townships plugin commands", flags = "", min = 1, max = 1)
+    @NestedCommand({AdminCmds.class})
     public static void mech() throws CommandException {
 
     }
 
-    @Command(aliases = { "nation" }, desc = "Nation management ", flags = "", min = 1, max = -1)
-    @NestedCommand({ NationCmds.class })
+    @Command(aliases = {"nation"}, desc = "Nation management ", flags = "", min = 1, max = -1)
+    @NestedCommand({NationCmds.class})
     public static void nation() throws CommandException {
 
     }
-    @Command(aliases = { "plot" }, desc = "Plot management ", flags = "", min = 1, max = -1)
-    @NestedCommand({ PlotCmds.class })
+
+    @Command(aliases = {"plot"}, desc = "Plot management ", flags = "", min = 1, max = -1)
+    @NestedCommand({PlotCmds.class})
     public static void plot() throws CommandException {
 
     }
-    @Command(aliases = { "town" }, desc = "Town management ", flags = "", min = 1, max = -1)
-    @NestedCommand({ TownCmds.class })
+
+    @Command(aliases = {"town"}, desc = "Town management ", flags = "", min = 1, max = -1)
+    @NestedCommand({TownCmds.class})
     public static void town() throws CommandException {
 
     }

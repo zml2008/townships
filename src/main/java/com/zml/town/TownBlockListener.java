@@ -11,7 +11,7 @@ import org.bukkit.Material;
 
 /**
  * Handle events for all block-related events
- * 
+ *
  * @author zml2008
  */
 public class TownBlockListener extends BlockListener {

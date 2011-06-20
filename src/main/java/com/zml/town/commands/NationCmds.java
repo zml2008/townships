@@ -10,15 +10,15 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Commands for nation management.
- * 
+ *
  * @author zml2008
  */
 public class NationCmds {
 
 
-    @Command(aliases = { "new" }, usage = "", desc = "Reload configs", flags = "", min = 0, max = 1)
-    @CommandPermissions({ "townships.admin.reload" })
+    @Command(aliases = {"new"}, usage = "", desc = "Reload configs", flags = "", min = 0, max = 1)
+    @CommandPermissions({"townships.admin.reload"})
     public static void add(CommandContext args, TownPlugin plugin,
-            CommandSender sender) throws CommandException {
+                           CommandSender sender) throws CommandException {
     }
 }

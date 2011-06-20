@@ -11,16 +11,16 @@ import com.zml.town.TownPlugin;
 
 /**
  * Commands for sneak toggle.
- * 
+ *
  * @author zml2008
  */
-public class AdminCmds  {
+public class AdminCmds {
 
 
-    @Command(aliases = { "reload" }, usage = "", desc = "Reload configs", flags = "", min = 0, max = 1)
-    @CommandPermissions({ "townships.admin.reload" })
+    @Command(aliases = {"reload"}, usage = "", desc = "Reload configs", flags = "", min = 0, max = 1)
+    @CommandPermissions({"townships.admin.reload"})
     public static void give(CommandContext args, TownPlugin plugin,
-            CommandSender sender) throws CommandException {
+                            CommandSender sender) throws CommandException {
         plugin.config.load();
         sender.sendMessage(ChatColor.GREEN + "Config File reloaded");
     }

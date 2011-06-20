@@ -1,6 +1,7 @@
 package com.zml.town;
 
 // import java.util.HashSet; //not used yet
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
+
 import java.util.logging.Logger;
 import java.io.*;
 
@@ -20,17 +22,25 @@ import com.sk89q.minecraft.util.commands.*;
 import com.sk89q.bukkit.migration.*;
 import com.zml.town.commands.*;
 
+// Other plugins!
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.GlobalRegionManager;
+import com.nijikokun.register.payment.Method;
+
 /**
  * Plugin for mechanics tweaks on GoMinecraft.
- * 
+ *
  * @author zml2008
  */
 public class TownPlugin extends JavaPlugin {
     private final TownBlockListener blockListener = new TownBlockListener(this);
-    private final TownPlayerListener playerListener = new TownPlayerListener(
-            this);
+    private final TownPlayerListener playerListener = new TownPlayerListener(this);
+    private final TownServerListener serverListener = new TownServerListener(this);
+    public PluginDescriptionFile pdf = getDescription();
 
     public Configuration config;
+    private WorldGuardPlugin wg;
+    public Method Method = null;
 
     /**
      * Manager for commands. This automatically handles nested commands,
@@ -68,9 +78,8 @@ public class TownPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-        PluginDescriptionFile pdfFile = this.getDescription();
-        logger.info("[" + pdfFile.getName() + "] version "
-                + pdfFile.getVersion() + " is disabled!");
+        logger.info("[" + pdf.getName() + "] version "
+                + pdf.getVersion() + " is disabled!");
     }
 
     public void onEnable() {
@@ -79,19 +88,19 @@ public class TownPlugin extends JavaPlugin {
         // Events
         pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.High, this);
         pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.High, this);
-        
+
+        //Economy plugin stuff
+        pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Priority.Normal, this);
+
+        wg = (WorldGuardPlugin) getServer().getPluginManager().getPlugin("WorldGuard");
 
         // Permissions
-        perms = new PermissionsResolverManager(getConfiguration(), getServer(),
-                "MechyStuff", logger);
+        perms = new PermissionsResolverManager(getConfiguration(), getServer(), "MechyStuff", logger);
         perms.load();
-        
+
         // Commands
         commands.register(GeneralCmds.class);
-        commands.register(TownCmds.class);
-        commands.register(PlotCmds.class);
-        commands.register(NationCmds.class);
-        commands.register(AdminCmds.class);
 
         getDataFolder().mkdirs();
         createDefaultConfiguration("config.yml");
@@ -107,7 +116,7 @@ public class TownPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label,
-            String[] args) {
+                             String[] args) {
         try {
             commands.execute(cmd.getName(), args, sender, this, sender);
         } catch (CommandPermissionsException e) {
@@ -135,7 +144,7 @@ public class TownPlugin extends JavaPlugin {
 
     /**
      * Check whether a player is in a group.
-     * 
+     *
      * @param player
      * @param group
      * @return
@@ -151,7 +160,7 @@ public class TownPlugin extends JavaPlugin {
 
     /**
      * Get the groups of a player.
-     * 
+     *
      * @param player
      * @return
      */
@@ -166,7 +175,7 @@ public class TownPlugin extends JavaPlugin {
 
     /**
      * Checks permissions.
-     * 
+     *
      * @param sender
      * @param perm
      * @return
@@ -189,7 +198,7 @@ public class TownPlugin extends JavaPlugin {
 
         return false;
     }
-    
+
     public boolean hasPermission(Player player, String perm) {
         if (player.isOp()) return true;
         return perms.hasPermission(player.getName(), perm);
@@ -197,7 +206,7 @@ public class TownPlugin extends JavaPlugin {
 
     /**
      * Checks permissions and throws an exception if permission is not met.
-     * 
+     *
      * @param sender
      * @param perm
      * @throws CommandPermissionsException
@@ -211,7 +220,7 @@ public class TownPlugin extends JavaPlugin {
 
     /**
      * Checks to see if the sender is a player, otherwise throw an exception.
-     * 
+     *
      * @param sender
      * @return
      * @throws CommandException
@@ -222,6 +231,10 @@ public class TownPlugin extends JavaPlugin {
         } else {
             throw new CommandException("A player is expected.");
         }
+    }
+
+    public GlobalRegionManager getRegionMgr() {
+        return wg.getGlobalRegionManager();
     }
 
     // Config loader. Lots of code, eh. "Borrowed" from CommandBook.

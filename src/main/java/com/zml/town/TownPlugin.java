@@ -2,6 +2,7 @@ package com.zml.town;
 
 // import java.util.HashSet; //not used yet
 
+import com.sk89q.regionbook.RegionManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -23,8 +24,7 @@ import com.sk89q.bukkit.migration.*;
 import com.zml.town.commands.*;
 
 // Other plugins!
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.GlobalRegionManager;
+import com.sk89q.regionbook.bukkit.RegionBookPlugin;
 import com.nijikokun.register.payment.Method;
 
 /**
@@ -39,8 +39,8 @@ public class TownPlugin extends JavaPlugin {
     public PluginDescriptionFile pdf = getDescription();
 
     public Configuration config;
-    private WorldGuardPlugin wg;
-    public Method Method = null;
+    private RegionBookPlugin rb;
+    public Method method = null;
 
     /**
      * Manager for commands. This automatically handles nested commands,
@@ -58,7 +58,7 @@ public class TownPlugin extends JavaPlugin {
     /**
      * Processes queries for permissions information. The permissions manager is
      * from WorldEdit and it automatically handles looking up permissions
-     * systems and picking the right one. MechyStuff just needs to call the
+     * systems and picking the right one. Townships just needs to call the
      * permission methods.
      */
     private PermissionsResolverManager perms;
@@ -93,7 +93,7 @@ public class TownPlugin extends JavaPlugin {
         pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Priority.Normal, this);
         pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Priority.Normal, this);
 
-        wg = (WorldGuardPlugin) getServer().getPluginManager().getPlugin("WorldGuard");
+        rb = (RegionBookPlugin) getServer().getPluginManager().getPlugin("RegionBook");
 
         // Permissions
         perms = new PermissionsResolverManager(getConfiguration(), getServer(), "MechyStuff", logger);
@@ -233,8 +233,8 @@ public class TownPlugin extends JavaPlugin {
         }
     }
 
-    public GlobalRegionManager getRegionMgr() {
-        return wg.getGlobalRegionManager();
+    public RegionManager getRegionMgr() {
+        return rb.getGlobalRegionManager();
     }
 
     // Config loader. Lots of code, eh. "Borrowed" from CommandBook.

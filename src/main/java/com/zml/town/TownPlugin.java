@@ -1,12 +1,10 @@
 package com.zml.town;
 
-// import java.util.HashSet; //not used yet
-
 import com.sk89q.regionbook.RegionManager;
+import com.zml.economy.RegisterManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
@@ -25,7 +23,6 @@ import com.zml.town.commands.*;
 
 // Other plugins!
 import com.sk89q.regionbook.bukkit.RegionBookPlugin;
-import com.nijikokun.register.payment.Method;
 
 /**
  * Plugin for mechanics tweaks on GoMinecraft.
@@ -35,12 +32,11 @@ import com.nijikokun.register.payment.Method;
 public class TownPlugin extends JavaPlugin {
     private final TownBlockListener blockListener = new TownBlockListener(this);
     private final TownPlayerListener playerListener = new TownPlayerListener(this);
-    private final TownServerListener serverListener = new TownServerListener(this);
     public PluginDescriptionFile pdf = getDescription();
 
     public Configuration config;
     private RegionBookPlugin rb;
-    public Method method = null;
+    public RegisterManager economy;
 
     /**
      * Manager for commands. This automatically handles nested commands,
@@ -78,7 +74,7 @@ public class TownPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-        logger.info("[" + pdf.getName() + "] version "
+        logger.info(pdf.getName() + " version "
                 + pdf.getVersion() + " is disabled!");
     }
 
@@ -89,14 +85,10 @@ public class TownPlugin extends JavaPlugin {
         pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.High, this);
         pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.High, this);
 
-        //Economy plugin stuff
-        pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Priority.Normal, this);
-
         rb = (RegionBookPlugin) getServer().getPluginManager().getPlugin("RegionBook");
 
         // Permissions
-        perms = new PermissionsResolverManager(getConfiguration(), getServer(), "MechyStuff", logger);
+        perms = new PermissionsResolverManager(this, "Townships", logger);
         perms.load();
 
         // Commands
@@ -108,9 +100,11 @@ public class TownPlugin extends JavaPlugin {
         this.config = getConfiguration();
         this.config.load();
 
+        economy = new RegisterManager(this, getDescription().getName(), logger);
+
 
         PluginDescriptionFile pdfFile = this.getDescription();
-        logger.info("[" + pdfFile.getName() + "] version "
+        logger.info(pdfFile.getName() + " version "
                 + pdfFile.getVersion() + " is enabled!");
     }
 

@@ -1,10 +1,13 @@
 package com.zml.town;
 
 import com.sk89q.regionbook.RegionManager;
+import com.sk89q.regionbook.util.FileUtil;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.zml.economy.RegisterManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
@@ -37,6 +40,8 @@ public class TownPlugin extends JavaPlugin {
     public Configuration config;
     private RegionBookPlugin rb;
     public RegisterManager economy;
+
+    public TownFlags townFlags;
 
     /**
      * Manager for commands. This automatically handles nested commands,
@@ -82,10 +87,12 @@ public class TownPlugin extends JavaPlugin {
         // Register events
         PluginManager pm = getServer().getPluginManager();
         // Events
-        pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.High, this);
-        pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.High, this);
+        // pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.High, this);
+        // pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.High, this);
 
-        rb = (RegionBookPlugin) getServer().getPluginManager().getPlugin("RegionBook");
+        rb = unsafeGetRegionBook();
+
+        townFlags = new TownFlags(rb.getFlagManager());
 
         // Permissions
         perms = new PermissionsResolverManager(this, "Townships", logger);
@@ -231,46 +238,32 @@ public class TownPlugin extends JavaPlugin {
         return rb.getGlobalRegionManager();
     }
 
-    // Config loader. Lots of code, eh. "Borrowed" from CommandBook.
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-
             InputStream input = this.getClass().getResourceAsStream(
                     "/defaults/" + name);
-            if (input != null) {
-                FileOutputStream output = null;
-
-                try {
-                    output = new FileOutputStream(actual);
-                    byte[] buf = new byte[8192];
-                    int length = 0;
-                    while ((length = input.read(buf)) > 0) {
-                        output.write(buf, 0, length);
-                    }
-
-                    logger.info(getDescription().getName()
-                            + ": Default configuration file written: " + name);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (input != null)
-                            input.close();
-                    } catch (IOException e) {
-                        logger.info("ERROR: File error");
-                    }
-
-                    try {
-                        if (output != null)
-                            output.close();
-                    } catch (IOException e) {
-                        logger.info("ERROR: File error");
-                    }
-
-                }
-            }
+            FileUtil.copy(input, actual);
+            logger.info(getDescription().getName()
+                    + ": Default configuration file written: " + name);
         }
 
+    }
+
+    /**
+     * Returns a copy of the RegionBook plugin.
+     * @return null if RegionBook cannot be found
+     */
+    private RegionBookPlugin unsafeGetRegionBook() {
+        Plugin regionBook = getServer().getPluginManager().getPlugin("RegionBook");
+        if (regionBook == null) {
+            return null;
+        }
+
+        if (regionBook instanceof RegionBookPlugin) {
+            return (RegionBookPlugin) regionBook;
+        } else {
+            return null;
+        }
     }
 }

@@ -17,11 +17,11 @@ import com.zml.town.TownPlugin;
 public class AdminCmds {
 
 
-    @Command(aliases = {"reload"}, usage = "", desc = "Reload configs", flags = "", min = 0, max = 1)
+    @Command(aliases = {"reload"}, usage = "", desc = "Reload configs", flags = "", min = 0, max = 0)
     @CommandPermissions({"townships.admin.reload"})
-    public static void give(CommandContext args, TownPlugin plugin,
+    public static void reload(CommandContext args, TownPlugin plugin,
                             CommandSender sender) throws CommandException {
-        plugin.config.load();
+        plugin.getConfiguration().load();
         sender.sendMessage(ChatColor.GREEN + "Config File reloaded");
     }
 }
